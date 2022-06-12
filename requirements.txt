@@ -1,0 +1,5 @@
+Django==4.0.5
+djangorestframework==3.13.1
+pyTelegramBotAPI==4.5.1
+celery==5.2.7
+redis==4.3.3
