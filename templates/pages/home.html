@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
 {% block custom %}
-    {{ some }}
+    {% if request.user.is_authenticated %}
+        шалом, {{ request.user.username }} </br>
+        {{ request.user.email }}
+        <a href="{% url 'logout' %}"><button>Logout</button></a>
+    {% else %}
+        may be u are registrate?         
+        <a href="{% url 'register' %}"><button>Registrate...</button></a> </br>
+        or:
+        <a href="{% url 'login' %}"><button>Log in...</button></a> </br>
+    {% endif %}
 {% endblock %}
