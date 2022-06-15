@@ -1,0 +1,4 @@
+select o.id, o.title, o.discription, cnc.name, cnw.lastname, o.client_sum, o.status 
+from orders as o 
+join corporative_net_clients as cnc on cnc.id=o.client_id_id 
+join corporative_net_workers as cnw on cnw.id=o.executor_id_id;
