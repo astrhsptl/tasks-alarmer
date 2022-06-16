@@ -1,18 +1,28 @@
-from gc import get_objects
-from re import T
-from this import d
-from django.shortcuts import render,redirect, HttpResponse
+from django.shortcuts import render,redirect
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 
 from website.models import Users_task
-
 from .forms import UserRegisterForm, UserAccountConfirmFormOrLogin, CreateTaskForm
 from .buisnes_logic.send_confirm_mail import send_confirm_email
 from .buisnes_logic.interaction_with_db import create_new_user, get_concrete_user, confirming_user_account
 from .buisnes_logic.interaction_with_db import add_task
+
+
+def trying(request, slug='suka_blya'):
+    return redirect('account', slug=slug)
+
+class GetConcreteTask(DetailView):
+    model = Users_task
+    template_name: str = 'pages/task.html'
+
+    def get(self, request, id):
+        context = {
+            'id': id
+        }
+        return render(request, self.template_name, context)
 
 class CreateTask(ListView):
     model = None
@@ -39,28 +49,24 @@ class UserAccountDetailView(DetailView):
     model = User
     template_name = 'pages/datail_account.html'
 
-    def get_slug_field(self) -> str:
-        some = super().get_slug_field()
-        print(some)
-        print(self.slug_field)
-        return some
-
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        user_id = context['user'].id
-        print(self.slug_field)
-        slug = self.kwargs['slug']
-        tasks = Users_task.objects.raw(
-        f'''
-        SELECT wut.title, wut.id, bro.* 
+    def get(self, request, slug):
+        if request.user.username != slug:
+            return redirect('home')
+        context = self.get_context_data(slug)        
+        return render(request, 'pages/datail_account.html', context)
+    
+    def get_context_data(self, slug) -> dict:
+        get = User.objects.get(username=slug)
+        query = User.objects.raw(f'''
+        SELECT wut.status, wut.title, wut.id, bro.* 
         FROM website_users_task AS wut
         JOIN website_users_tasks_broker as bro
-        ON bro.user_id_id={user_id}
-        WHERE wut.id=bro.task_id_id;
-        '''
-        )
-        context['slug'] = slug
-        context['query'] = tasks
+        ON bro.user_id_id={get.id}
+        WHERE wut.status="compliting..." AND wut.id=bro.task_id_id;
+        ''')
+        context = {
+            'query': query
+        }
         return context
 
 class HomePage(ListView):

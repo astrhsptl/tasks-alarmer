@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 
 {% block custom %}
-    {{ user.is_active }} <br>
-    <button >Create task</button>
-
-<hr>
-{% for item in query %}
-    {{ item.title }} <br>
-    <hr>
-{% endfor %}
-{% endblock %}
+    {% for item in query %}
+        <hr>
+        {{ item.title }} <br>
+    {% endfor %}
+{% endblock %}       
